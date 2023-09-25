@@ -5,14 +5,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "42069:42069"
     volumes:
-      - ./app:/app
-    depends_on:
-      - db
+      - .:/app
     environment:
-      - DATABASE_URL=sqlite:///./app/test.db
-  db:
-    image: "sqlite:latest"
-    volumes:
-      - ./app/test.db:/app/test.db
+      - DATABASE_URL=sqlite:///./test.db
+      - SECRET_KEY=${SECRET_KEY}

@@ -1,81 +1,72 @@
-# Password Hashing
+import os
+import secrets
+from typing import Tuple
+
+from fastapi import HTTPException
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
+from jose import JWTError, jwt
+
+
+
+
+# Password Hashing:
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+def hash_password(password: str) -> Tuple[str, str]:
+    """ Hash the given password and return the hashed password and salt value. """
+    
+    # Generate a random salt value
+    salt = secrets.token_hex(16)
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+    # Hash the password with the salt value
+    hashed_password = pwd_context.hash(password + salt)
+
+    # Return the hashed password and salt value
+    return f"{hashed_password}:{salt}", salt
+
+def verify_password(plain_password: str, hashed_password: str, salt: str) -> bool:
+    """ Verify that the given plain text password matches the hashed password. """
+
+    # Split the hashed password and salt value
+    hashed_password, salt_in_db = hashed_password.split(":")
+
+    # Hash the plain text password with the salt value
+    return pwd_context.verify(plain_password + salt_in_db, hashed_password)
 
 
 
-from pydantic import BaseModel
-from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from datetime import datetime, timedelta
 
-# ...
+# Access Token:
 
-# JWT Configuration
-SECRET_KEY = "jonasmussetryne42069"  # Replace with a secure secret key
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: str | None = None
-
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    """ Create a JWT access token with the given data. """
+    if not SECRET_KEY:
+        raise HTTPException(status_code=500, detail="No secret key set for JWT token.")
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    try:
+        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        return encoded_jwt
+    except JWTError:
+        raise HTTPException(status_code=500, detail="Could not create access token.")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def decode_access_token(token: str):
+    """ Decode a JWT access token and return the email address. """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        return email
     except JWTError:
-        raise credentials_exception
-    return token_data
-
-async def get_current_active_user(current_user: TokenData = Depends(get_current_user)):
-    # Implement logic to check if the user is active (e.g., from a database)
-    return current_user
-
-@app.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-@app.get("/secure-data")
-async def get_secure_data(current_user: TokenData = Depends(get_current_active_user)):
-    # This route is secured, and only authenticated users can access it
-    return {"message": "This is secure data!"}
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
