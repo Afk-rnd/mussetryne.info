@@ -1,4 +1,5 @@
 # Mussetryne.info - Backend
+## Instructions
 Before running you need to define a ``SECRET_KEY`` in ``mussetryne/.env``, like for example: 
 ```SECRET_KEY="super_secret_key"```  
 
