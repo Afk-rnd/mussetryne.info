@@ -94,6 +94,10 @@ def protected_route(current_user: UserDB = Depends(get_current_user)):
     """ Route that requires authentication. """
     return {"message": "This is a protected route."}
 
+@app.get("/")
+def root():
+    return {"message": "Mussetryne2.0 is live."}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=42069)
