@@ -96,7 +96,7 @@ def protected_route(current_user: UserDB = Depends(get_current_user)):
 
 @app.get("/")
 def root():
-    return {"message": "Musserende atferd straffes ikke med fisk."}
+    return {"message": "Musserende atferd kan ikke straffes med fisk."}
 
 if __name__ == "__main__":
     import uvicorn
