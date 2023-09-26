@@ -1,18 +1,23 @@
 # main.py
+
 import os
 
-from http.client import HTTPException
 from auth import create_access_token, decode_access_token, hash_password, verify_password
-from db import Straffefisk, StraffefiskCreate, Token, User, UserCreate, UserDB, UserLogin, Base
+from db import Straffefisk, StraffefiskCreate, StraffefiskDB, Token, User, UserCreate, UserDB, UserLogin, Base
 
+from typing import List
 from fastapi import FastAPI
+from datetime import datetime
 from sqlalchemy.orm import Session
+from http.client import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.declarative import declarative_base
+
+
 
 
 app = FastAPI()
@@ -24,6 +29,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
+
+
+
 def get_db():
     """ Dependency to inject database session into route functions. """
     db = SessionLocal()
@@ -32,14 +40,37 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/straffefisk/", response_model=Straffefisk)  # Use a valid Pydantic model here
-def create_straffefisk(sf: StraffefiskCreate):
-    db_item = Straffefisk(**sf.dict())
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    """ Retrieves the current user from the database. Only works if the user is authenticated, otherwise raises HTTPException. """
+    email = decode_access_token(token)
+    if email:
+        user = db.query(UserDB).filter(UserDB.email == email).first()
+    if user is None:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+    return user
+
+
+
+
+# Routes:
+
+@app.post("/straffefisk/", response_model=Straffefisk)
+def give_straffefisk(sf: StraffefiskCreate, current_user: UserDB = Depends(get_current_user)):
+    db_item = StraffefiskDB(**sf.model_dump(), given_by_id=current_user.id, given_dt=datetime.now())
+    print(db_item)
     with SessionLocal() as session:
         session.add(db_item)
         session.commit()
         session.refresh(db_item)
         return db_item
+
+@app.get("/straffefisk/", response_model=List[Straffefisk])
+def read_straffefisk(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """ Route to get all straffefisk. """
+    straffefisk = db.query(StraffefiskDB).offset(skip).limit(limit).all()
+    return straffefisk
 
 @app.post("/login", response_model=Token)
 def login(user_login: UserLogin, db: Session = Depends(get_db)):
@@ -78,25 +109,24 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     # Return a response indicating successful registration
     return {"message": "User registered successfully"}
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """ Retrieves the current user from the database. Only works if the user is authenticated, otherwise raises HTTPException. """
-    email = decode_access_token(token)
-    if email:
-        user = db.query(UserDB).filter(UserDB.email == email).first()
-    if user is None:
-        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-    return user
-
 @app.get("/users/me")
-def protected_route(current_user: UserDB = Depends(get_current_user)):
+def current_user(current_user: UserDB = Depends(get_current_user)):
     """ Route that requires authentication. """
     return {"user": "%s" % current_user.email}
+
+@app.get("/users/", response_model=List[User])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """ Route to get all users. """
+    users = db.query(UserDB).offset(skip).limit(limit).all()
+    return users
 
 @app.get("/")
 def root():
     return {"message": "Mussetryne2.0 is live."}
+
+
+
+# Main:
 
 if __name__ == "__main__":
     import uvicorn
