@@ -122,7 +122,7 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @app.get("/")
 def root():
-    return {"message": "Mussetryne2.0 is live."}
+    return {"message": "Mussetryne2.0 is live and now."}
 
 
 
