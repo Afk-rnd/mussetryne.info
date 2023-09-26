@@ -89,10 +89,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")
     return user
 
-@app.get("/protected")
+@app.get("/users/me")
 def protected_route(current_user: UserDB = Depends(get_current_user)):
     """ Route that requires authentication. """
-    return {"message": "This is a protected route."}
+    return {"user": "%s" % current_user.email}
 
 @app.get("/")
 def root():
