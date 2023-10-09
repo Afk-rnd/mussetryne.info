@@ -13,6 +13,10 @@ class UserDB(Base):
     salt = Column(String)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    
+    profile_picture_path = Column(String, default="default_profile_picture.png")
+
+    status = Column(String, default="waiting_for_approval")
     buckets: Mapped[List["BucketDB"]] = relationship("BucketDB", secondary=bucket_user_associations, back_populates="users")
 
 class User(BaseModel):
