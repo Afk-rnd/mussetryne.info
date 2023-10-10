@@ -1,6 +1,6 @@
 from typing import List
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Integer
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from db import Base, bucket_user_associations
@@ -11,8 +11,13 @@ class UserDB(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     salt = Column(String)
-    email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    is_admin = Column(Integer, default=0)
+    email = Column(String, unique=True, index=True)
+    
+    profile_picture_path = Column(String, default="mussepictures/default_profile_picture.png")
+
+    status = Column(String, default="waiting_for_approval")
     buckets: Mapped[List["BucketDB"]] = relationship("BucketDB", secondary=bucket_user_associations, back_populates="users")
 
 class User(BaseModel):

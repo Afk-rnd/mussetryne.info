@@ -11,9 +11,14 @@ COPY auth.py .
 COPY db.py .
 COPY requirements.txt .
 
+# Copy directory for profile pictures and default profile picture
+RUN mkdir -p mussepictures && chmod 755 mussepictures
+COPY default_profile_picture.jpeg mussepictures/default_profile_picture.jpeg
+
 # Install dependencies
 RUN pip install -r requirements.txt
 
+# Set environment variables
 ENV DATABASE_URL sqlite:///./test.db
 
 # Expose the port your FastAPI app will run on (change it as needed)
