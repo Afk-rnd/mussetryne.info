@@ -12,7 +12,12 @@ class Base(DeclarativeBase):
 # Define the secondary table for the many-to-many relationship:
 bucket_user_associations = Table('bucket_user', Base.metadata,
     Column('bucket_id', Integer, ForeignKey('buckets.id')),
-    Column('user_id', Integer, ForeignKey('users.id'))
+    Column('user_id', Integer, ForeignKey('users.id')),
+)
+
+unconfirmed_bucket_user_associations = Table('unconfirmed_bucket_user', Base.metadata,
+    Column('bucket_id', Integer, ForeignKey('buckets.id')),
+    Column('user_id', Integer, ForeignKey('users.id')),
 )
 
 # Authentification:
