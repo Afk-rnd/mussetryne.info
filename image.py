@@ -1,5 +1,7 @@
-from typing import Tuple
+from io import BytesIO
 from PIL import Image
+from typing import Tuple
+
 from fastapi import UploadFile
 
 
@@ -45,9 +47,9 @@ def is_jpeg(file: UploadFile):
 async def process_mussepicture(file: UploadFile, save_path: str | None = None):
     """ Function to process mussepicture. """
     file_contents = await file.read()
-    image = Image.open(file_contents)
+    image = Image.open(BytesIO(file_contents))
 
     if not is_jpeg(file):
-        file = convert_to_jpeg(image)
+        image = convert_to_jpeg(image)
     
-    resize_image(file, save_path=save_path, size=(PROFILE_PIC_WIDTH, PROFILE_PIC_HEIGHT))
+    resize_image(image, save_path=save_path, size=(PROFILE_PIC_WIDTH, PROFILE_PIC_HEIGHT))

@@ -53,6 +53,7 @@ class AuthenticatedSession():
     def __init__(self, db: SessionLocal, user: UserDB):
         self.db = db
         self.user = user
+        self.db.refresh(self.user)
 
 
 def get_db():
@@ -166,7 +167,7 @@ async def upload_mussepicture(file: UploadFile = File(...), authenticated_sessio
         os.mkdir(PROFILE_PICTURES_DIRECTORY)
 
     file_path = os.path.join("mussepictures", authenticated_session.user.email + ".jpeg")
-    process_mussepicture(file, save_path=file_path) == file_path
+    await process_mussepicture(file, save_path=file_path)
 
     authenticated_session.user.profile_picture_path = file_path
     authenticated_session.db.commit()
@@ -175,7 +176,7 @@ async def upload_mussepicture(file: UploadFile = File(...), authenticated_sessio
     return {"message": "Profile picture (mussepicture) uploaded successfully"}
 
 @app.get("/profile_picture")
-def get_profile_picture(user_email: str, authenticated_session: AuthenticatedSession = Depends(get_authenticated_session)):
+def get_profile_picture(user_email: str, authenticated_session: AuthenticatedSession = Depends(get_unapproved_session)):
     """ Route to get profile picture (Mussepicture). """
     # if user_email != authenticated_session.user.email:
     #     raise HTTPException(status_code=401, detail="Not authorized to view this profile picture")
@@ -189,6 +190,71 @@ def get_profile_picture(user_email: str, authenticated_session: AuthenticatedSes
 def current_user(authenticated_session: AuthenticatedSession = Depends(get_authenticated_session)):
     """ Route that requires authentication. """
     return {"user": "%s" % authenticated_session.user.email}
+
+@app.put("/users/approve")
+async def approve_user(user_email: str, authenticated_session: AuthenticatedSession = Depends(get_authenticated_session)):
+    """ Route to approve user. """
+    print(authenticated_session.user.is_admin)
+    if not bool(authenticated_session.user.is_admin):
+        raise HTTPException(status_code=401, detail="Not authorized to approve users")
+    
+    user = authenticated_session.db.query(UserDB).filter(UserDB.email == user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.status = "approved"
+    authenticated_session.db.add(user)
+
+    authenticated_session.db.commit()
+    authenticated_session.db.refresh(user)
+
+    return {"message": "User approved successfully"}
+
+@app.put("/users/reject")
+async def reject_user(user_email: str, authenticated_session: AuthenticatedSession = Depends(get_authenticated_session)):
+    """ Route to reject user. """
+    if not authenticated_session.user.is_admin:
+        raise HTTPException(status_code=401, detail="Not authorized to reject users")
+    
+    user = authenticated_session.db.query(UserDB).filter(UserDB.email == user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.status = "rejected"
+    authenticated_session.db.add(user)
+
+    authenticated_session.db.commit()
+    authenticated_session.db.refresh(user)
+
+    return {"message": "User rejected successfully"}
+
+@app.get("/users/unapproved", response_model=List[User])
+def read_unapproved_users(skip: int = 0, limit: int = 100, authenticated_session: AuthenticatedSession = Depends(get_authenticated_session)):
+    """ Route to get all unapproved users. """
+    if not authenticated_session.user.is_admin:
+        raise HTTPException(status_code=401, detail="Not authorized to view unapproved users")
+    
+    users = authenticated_session.db.query(UserDB).filter(UserDB.status == "waiting_for_approval").offset(skip).limit(limit).all()
+
+    return users
+
+@app.put("/users/upgrade")
+async def upgrade_user(user_email: str, authenticated_session: AuthenticatedSession = Depends(get_authenticated_session)):
+    """ Route to upgrade user. """
+    if not authenticated_session.user.is_admin:
+        raise HTTPException(status_code=401, detail="Not authorized to upgrade users")
+    
+    user = authenticated_session.db.query(UserDB).filter(UserDB.email == user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.is_admin = True
+    authenticated_session.db.add(user)
+
+    authenticated_session.db.commit()
+    authenticated_session.db.refresh(user)
+
+    return {"message": "User upgraded successfully"}
 
 @app.get("/users/", response_model=List[User])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
