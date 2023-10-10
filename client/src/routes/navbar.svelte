@@ -11,6 +11,12 @@
     DropdownHeader,
     DropdownDivider,
   } from "flowbite-svelte";
+
+  import { Button, ButtonGroup } from "flowbite-svelte";
+
+  const handle_click = () => {
+    location.href = "/straffefisk";
+  };
 </script>
 
 <Navbar>
@@ -36,16 +42,13 @@
     </DropdownHeader>
     <DropdownItem>Dashboard</DropdownItem>
     <DropdownItem>Settings</DropdownItem>
-    <DropdownItem>Straffefisk</DropdownItem>
+    <DropdownItem on:click={handle_click}>Straffefisk</DropdownItem>
     <DropdownDivider />
     <DropdownItem>Sign out</DropdownItem>
   </Dropdown>
   <NavUl>
     <NavLi href="/" active={true}>Hjem</NavLi>
-    <NavLi href="/about">About</NavLi>
-    <NavLi href="/docs/components/navbar">Navbar</NavLi>
-    <NavLi href="/pricing">Pricing</NavLi>
-    <NavLi href="/contact">Contact</NavLi>
+    <NavLi href="/about">Om oss</NavLi>
+    <NavLi href="/contact">Kontakt</NavLi>
   </NavUl>
 </Navbar>
-
