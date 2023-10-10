@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  backend:
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    ports:
+      - "42069:42069"
+    volumes:
+      - ./server:/app
+    environment:
+      - DATABASE_URL=sqlite:///./test.db
+      - SECRET_KEY=${SECRET_KEY}
+    networks:
+      - mussenetwork
+  
+  frontend:
+    build: 
+      context: ./client/
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+    - ./client/src:/app/src
+    command: pnpm run dev --host
+    networks:
+      - mussenetwork
+
+networks:
+  mussenetwork:
+    driver: bridge
