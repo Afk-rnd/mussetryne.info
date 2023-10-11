@@ -1,7 +1,7 @@
 
 <div class="flex items-center justify-center w-screen">
 <div
-  class="justify-center items-center text-justify px-10 ml-40 max-w-5xl"
+  class="justify-center items-center text-justify px-10 max-w-5xl"
   style="font-size: 20px; font-family: sans-serif;"
   >
   <h1 class="text-3xl font-bold">Om oss</h1>

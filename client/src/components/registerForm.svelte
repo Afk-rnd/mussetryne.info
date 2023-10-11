@@ -13,13 +13,13 @@
     let password = "";
     let rPassword = "";
     let passwordMatch = false;
-    let isPasswordStrong = false;
+    let isPasswordStrong = true;
 
 
     // Verify email is valid:
 
     let email = "";
-    let isEmailValid = false;
+    let isEmailValid = true;
 
     isEmailValid = checkEmail(email);
 

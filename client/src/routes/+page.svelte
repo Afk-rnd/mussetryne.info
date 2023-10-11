@@ -24,7 +24,7 @@
     </Dropdown>
   </div>
 {:else}
-  <div class="flex items-center justify-center w-screen">
+  <div class="w-screen">
     <Splash />
   </div>
 {/if}
