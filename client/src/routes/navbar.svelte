@@ -26,7 +26,9 @@
       class="mr-3 h-16 sm:h-22"
       alt="Flowbite Logo"
     />
-    <span class="self-center text-xl font-semibold dark:text-white"
+    <span
+      class="self-center font-semibold dark:text-white"
+      style="font-size: 10px;"
       >Opplysningssenteret for<br />Medisinsk <br /> Mussetryne</span
     >
   </NavBrand>
