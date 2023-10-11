@@ -30,5 +30,6 @@
   <NavUl class="order-1 justify-end">
     <NavLi href="/" active={true}>Hjem</NavLi>
     <NavLi href="/about">Om oss</NavLi>
+    <NavLi href="/login">Logg inn</NavLi>
   </NavUl>
 </Navbar>
