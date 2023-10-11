@@ -1,56 +1,36 @@
 <script>
+    import { login, storeToken } from "../lib/login.js";
+    import { checkEmailValid } from "../lib/register.js";
 
-    // Define URL to send login request to:
 
-    export let url = "";
+    export let url = "";    // Define URL to send login request to:
 
 
     // Verify email is valid:
 
     let email = "";
     let isEmailValid = false;
-    
+
     function checkEmail() {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        isEmailValid = emailRegex.test(email);
+        isEmailValid = checkEmailValid(email);
     }
     
-
     // Log-in user:
 
     let password = "";
 
-    async function login(url, email, password){
-        const data = JSON.stringify({email: email, password: password});
-
-        return fetch(url, {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json"
-            },
-            body: data
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json().then(data => {return data.access_token});
-            } else if (response.status == 401) {
-                alert("Feil brukernavn eller passord.");
-            } else {
-                alert("En feil oppstod. Vennligst prøv igjen.");
-            }
-        });
-
-    }
-
-    
-    // Handle form submission:
-
+    /**
+     * Handle form submission and log-in user.
+     * Performs no validation, as this is done in the form.
+     * Login-request is sent to server, and token is stored in local storage.
+     * @param event - Event object from user submitting form.
+     */
     async function handleSubmit(event) {
         event.preventDefault();
         if (isEmailValid) {
             const token = await login(url, email, password);
-            if (token) {
-                localStorage.setItem("mussetoken", token);
-                alert("Du er nå logget inn!")
+            const logged_in = storeToken(token);
+            if(logged_in){
                 window.location.href = "http://localhost:5173/";
             }
         }
@@ -58,6 +38,10 @@
 
 </script>
 
+
+
+
+<!-- Login-form -->
 <form method="POST" action="localhost:42069/login" on:submit={handleSubmit}>
     
     <!-- Email -->

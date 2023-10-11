@@ -1,5 +1,8 @@
 <script>
 
+    import { login } from "../lib/login.js";"";
+    import { register, checkPasswordStrength, checkEmailValid, checkPasswordMatch } from "../lib/register.js";
+
     // Define urls:
     export let register_url = "";
     export let login_url = "";
@@ -12,85 +15,19 @@
     let passwordMatch = false;
     let isPasswordStrong = false;
 
-    function checkPassword() {
-        if (password && rPassword && password == rPassword) {
-            passwordMatch = true;
-        } else {
-            passwordMatch = false;
-        }
-
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/; // Minimum eight characters, at least one uppercase letter, one lowercase letter and one number
-        isPasswordStrong = passwordRegex.test(password);
-    }
-
 
     // Verify email is valid:
 
     let email = "";
     let isEmailValid = false;
 
-    function checkEmail() {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        isEmailValid = emailRegex.test(email);
-    }
+    isEmailValid = checkEmail(email);
 
 
-    // Register/Log-in user:
-
-    async function register(url, username, password){
-            const data = JSON.stringify({email: email, password: password});
-
-            return fetch(url, {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json"
-                },
-                body: data
-            }).then(response => {
-                if (response.status == 200) {
-                    alert("Registrering fullført!")
-                    return true;
-                } else if (response.status == 409) {
-                    alert("En bruker med denne e-postadressen eksisterer allerede.");
-                }
-            })
-            .catch(error => {
-            
-            });
-
-        alert("En feil oppstod. Vennligst prøv igjen.");
-        return false;
-
-    }
-
-    async function login(login_url, email, password){
-        const data = JSON.stringify({email: email, password: password});
-        return fetch(login_url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: data
-        }).then(response => {
-            console.log(response.status);
-            if (response.status == 200) {
-                // alert("Du er nå logget inn!")
-                return response.json().then(data => {return data.access_token});
-            } else if (response.status == 401) {
-                alert("Feil brukernavn eller passord.");
-                return "";
-            }
-        }).catch(error => {
-            
-        });
-
-        alert("En feil oppstod. Vennligst prøv igjen.");
-        return "";
-
-    }
-
-    // Handle form submission:
-
+    /**
+     * Handle form submission and register user.
+     * @param event - Event object from user submitting form.
+     */
     async function handleSubmit(event){
         event.preventDefault();
 
@@ -108,8 +45,27 @@
         }
     }
 
+    /**
+     * Helper-function to check if password is strong enough.
+     * Updates local variables isPasswordStrong and passwordMatch.
+    */
+    function checkPassword(){
+        isPasswordStrong = checkPasswordStrength(password);
+        passwordMatch = checkPasswordMatch(password, rPassword);
+    }
+
+    /**
+     * Helper-function to check if email is valid.
+     * Updates local variable isEmailValid.
+    */
+    function checkEmail(){
+        isEmailValid = checkEmailValid(email);
+    }
+
 </script>
 
+
+<!-- Registration form -->
 <form method="POST" action="localhost:42069/register" on:submit={handleSubmit}>
 
     <!-- Email -->
