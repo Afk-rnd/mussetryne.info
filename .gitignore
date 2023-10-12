@@ -8,3 +8,4 @@ node_modules/
 *.Identifier
 .venv/
 server/mussepictures/
+.venv

@@ -3,7 +3,6 @@ FROM python:3.11-slim
 
 # Set the working directory in the container
 WORKDIR /app
-# RUN pwd
 
 # Copy the FastAPI app files to the container
 COPY main.py .
@@ -20,6 +19,14 @@ RUN pip install -r requirements.txt
 
 # Set environment variables
 ENV DATABASE_URL sqlite:///./test.db
+
+# Copy the migration script into the container
+COPY alembic.ini .
+COPY alembic ./alembic
+
+# Run the migration script
+# RUN python3 migration.py
+RUN alembic upgrade head
 
 # Expose the port your FastAPI app will run on (change it as needed)
 EXPOSE 42069
