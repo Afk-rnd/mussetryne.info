@@ -1,6 +1,15 @@
 import { writable } from "svelte/store";
 
 export const mussetoken = writable("");
+export const currently_logged_in = writable(false);
+
+export const login_set = () => {
+    currently_logged_in.set(true);
+  };
+  
+  export const login_reset = () => {
+    currently_logged_in.set(false);
+  };
 
 /**
  * Handler for when login-request returns no errors.
@@ -14,6 +23,7 @@ async function loginNoError(response){
         
         if(token && token !== "" && token_type === "bearer"){  // TODO: This is not a great check.
             const logged_in = storeToken(token);
+            currently_logged_in.set(logged_in);
             return logged_in;
         }
 

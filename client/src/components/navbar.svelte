@@ -14,6 +14,7 @@
 
   import { logOut } from "../lib/logout.js";
   import { Button, ButtonGroup } from "flowbite-svelte";
+  import ProfilePicture from "./ProfilePicture.svelte";
 
   const handle_click = () => {
     location.href = "/straffefisk";
@@ -26,6 +27,7 @@
 
     if (typeof(window) !== "undefined" && window !== null){
         localStorage.setItem("mussetoken", "");
+        localStorage.setItem("currently_logged_in", "false");
     }
 
     if (window.location.href !== "http://localhost:5173/"){
@@ -56,7 +58,7 @@
     >
   </NavBrand>
   <div class="flex items-center md:order-2">
-    <Avatar id="avatar-menu" src="/images/profile-picture-3.webp" />
+    <ProfilePicture id="avatar-menu" />
     <NavHamburger class1="w-full md:flex md:w-auto md:order-1" />
   </div>
   <Dropdown placement="bottom" triggeredBy="#avatar-menu">
