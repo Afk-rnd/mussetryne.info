@@ -15,6 +15,8 @@ WORKDIR /app
 COPY pnpm-lock.yaml ./
 RUN pnpm fetch --dev
 
+COPY ./src/.svelte-kit .svelte-kit
+
 ADD . ./
 RUN pnpm install --offline --dev
 

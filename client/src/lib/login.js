@@ -1,7 +1,28 @@
-
 import { writable } from "svelte/store";
 
-export const mussetoken = writable();
+export const mussetoken = writable("");
+
+/**
+ * Handler for when login-request returns no errors.
+ * @param {Response} response - The response object returned by fetch() in login().
+ */
+async function loginNoError(response){
+    if (response.status == 200) {
+        const json = await response.json();
+        const token = json.access_token;
+        const token_type = json.token_type;
+        
+        if(token && token !== "" && token_type === "bearer"){  // TODO: This is not a great check.
+            const logged_in = storeToken(token);
+            return logged_in;
+        }
+
+    } else if (response.status == 401) {
+        alert("Feil brukernavn eller passord.");
+        return false;
+    }
+}
+
 /**
  * Performs login-request to the server. Returns the token if successful, otherwise returns an empty string.
  * @param {string} url - The url to the server (backend-endpoint for login).
@@ -10,27 +31,27 @@ export const mussetoken = writable();
  */
 export async function login(url, email, password){
     const data = JSON.stringify({email: email, password: password});
-    return fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: data
-    }).then(response => {
-        console.log(response.status);
-        if (response.status == 200) {
-            // alert("Du er nå logget inn!")
-            return response.json().then(data => {return data.access_token});
-        } else if (response.status == 401) {
-            alert("Feil brukernavn eller passord.");
-            return "";
-        }
-    }).catch(error => {
-        
-    });
+    
+    try{
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "localhost:42069"
+            },
+            body: data,
+            mode: "cors",
+            credentials: "include"
+        });
 
-    alert("En feil oppstod. Vennligst prøv igjen.");
-    return "";
+        const loginSucces = await loginNoError(response);
+        return loginSucces;
+
+    }
+    catch(error){
+        alert("En feil oppstod. Vennligst prøv igjen.");
+        return false;
+    }
 
 }
 
@@ -40,11 +61,16 @@ export async function login(url, email, password){
  */
 export function storeToken(token) {
     if (token) {
-        mussetoken.set(token)
+        // alert("Storing token: " + token)
+        mussetoken.set(token);
         // alert("Du er nå logget inn!")
         return true;
     }
     return false;
+}
+
+export function deleteToken() {
+    mussetoken.set("");
 }
 
 export function isLoggedIn() {

@@ -2,10 +2,31 @@
   import { Button, Dropdown, DropdownItem, Avatar } from "flowbite-svelte";
   import { ChevronDownSolid } from "flowbite-svelte-icons";
   import Splash from "../components/splash.svelte";
+  import { mussetoken } from "../lib/login";
   const get_bucket_users = () => {
     return ["Alex", "chris", "morten"];
   };
   export let logged_in = false;
+
+  let token = "";
+
+  // Only set token in local storage if in browser:
+  if(typeof window !== "undefined"){
+    const t = localStorage.getItem("mussetoken");
+    if(t && typeof(t) == "string" && t.length > 0){
+      token = t;
+      logged_in = token.length > 0;
+    }
+  }
+  
+  // Set value of token and loggged_in when token changes:
+  mussetoken.subscribe((t) => {
+    if(t && typeof(t) == "string" && t.length > 0){
+      token = t;
+      logged_in = token.length > 0;
+    }
+	});
+
 </script>
 
 {#if logged_in}

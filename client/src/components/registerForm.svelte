@@ -34,10 +34,8 @@
         if (isEmailValid && isPasswordStrong && passwordMatch) {
             let registered = await register(register_url, email, password);
             if (registered){
-                const token = await login(login_url, email, password);
-
-                if (token){
-                    localStorage.setItem("mussetoken", token);
+                const logged_in = await login(login_url, email, password);
+                if(logged_in){
                     window.location.href = "/registered";
                 }
 

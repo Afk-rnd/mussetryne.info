@@ -36,7 +36,8 @@ export async function register(url, email, password){
     return fetch(url, {
         method: "POST",
         headers: {
-        "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "localhost:42069"
         },
         body: data
     }).then(response => {

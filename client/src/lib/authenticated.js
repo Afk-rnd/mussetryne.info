@@ -1,16 +1,21 @@
 import { mussetoken } from "../lib/login.js";
 
+let token = "";
+mussetoken.subscribe((mussetoken) => {
+    token = mussetoken;
+});
+
 function notLoggedIn() {
     alert("Du er ikke logget inn.");
     return "";
 }
 
 async function authenticatedRequest(url, method, data, params) {
-    if (!mussetoken) {
+    if (!token) {
         return notLoggedIn();
     }
 
-    let headers = {"Authorization": `Bearer " + ${mussetoken}`, }; // Add JWT to header.
+    let headers = {"Authorization": `Bearer " + ${token}`, }; // Add JWT to header.
     
     if ((method == "POST" || method == "PUT") && data.length > 0){
         headers["Content-Type"] = "application/json";
