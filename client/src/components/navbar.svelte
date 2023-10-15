@@ -12,11 +12,34 @@
     DropdownDivider,
   } from "flowbite-svelte";
 
+  import { logOut } from "../lib/logout.js";
   import { Button, ButtonGroup } from "flowbite-svelte";
 
   const handle_click = () => {
     location.href = "/straffefisk";
   };
+
+  const handle_logout = () => {
+    logOut();
+
+    console.log("logging out")
+
+    if (typeof(window) !== "undefined" && window !== null){
+        localStorage.setItem("mussetoken", "");
+    }
+
+    if (window.location.href !== "http://localhost:5173/"){
+        window.location.href = "/";
+        return;
+    }
+
+    location.reload();
+  };
+
+  function logOutRedirect(){
+      
+  }
+
 </script>
 
 <Navbar>
@@ -26,7 +49,9 @@
       class="mr-3 h-16 sm:h-22"
       alt="Flowbite Logo"
     />
-    <span class="self-center text-xl font-semibold dark:text-white"
+    <span
+      class="self-center font-semibold dark:text-white"
+      style="font-size: 10px;"
       >Opplysningssenteret for<br />Medisinsk <br /> Mussetryne</span
     >
   </NavBrand>
@@ -44,7 +69,7 @@
     <DropdownItem>Settings</DropdownItem>
     <DropdownItem on:click={handle_click}>Straffefisk</DropdownItem>
     <DropdownDivider />
-    <DropdownItem>Sign out</DropdownItem>
+    <DropdownItem on:click={handle_logout}>Sign out</DropdownItem>
   </Dropdown>
   <NavUl>
     <NavLi href="/" active={true}>Hjem</NavLi>

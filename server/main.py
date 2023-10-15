@@ -14,6 +14,7 @@ from typing import List
 from fastapi import FastAPI
 from fastapi import File, UploadFile
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from datetime import datetime
 from sqlalchemy.orm import Session
@@ -27,6 +28,23 @@ from fastapi import Depends, HTTPException, status
 
 
 app = FastAPI()
+
+# Middleware:
+
+origins = [
+    "http://localhost",
+    "http://localhost:42069",
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT"],
+    allow_headers=["*"],
+)
+
 
 
 
