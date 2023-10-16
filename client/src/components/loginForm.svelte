@@ -28,20 +28,21 @@
     async function handleSubmit(event) {
         event.preventDefault();
         if (isEmailValid) {
-            const logged_in = await login(url, email, password);
-            if(logged_in){
-                login_set();
-                window.location.href = "http://localhost:5173/";
+            try{
+                const login_details = await login(url, email, password);
+                const logged_in = await login_set(login_details);
+                if(logged_in){
+                    window.location.href = "/";
+                }
+            }   
+            catch (e){
+                console.log(e);
             }
         }
     }
 
     mussetoken.subscribe(token => {
-        // Only set token in local storage if in browser:
-        if (typeof(window) !== "undefined" && window !== null){
-            localStorage.setItem("mussetoken", token);
-            localStorage.setItem("currently_logged_in", "true");
-        }
+
     });
 
 </script>

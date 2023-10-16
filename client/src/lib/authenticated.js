@@ -1,13 +1,21 @@
 import { mussetoken } from "../lib/login.js";
 
 let token = "";
+
 mussetoken.subscribe((mussetoken) => {
     token = mussetoken;
 });
 
+if (token === "" && typeof window !== "undefined") {
+    const t = localStorage.getItem("mussetoken");
+    if(t){
+        token = t;
+    }
+}
+
 function notLoggedIn() {
     alert("Du er ikke logget inn.");
-    return "";
+    return {};
 }
 
 async function authenticatedRequest(url, method, data, params) {
@@ -15,15 +23,10 @@ async function authenticatedRequest(url, method, data, params) {
         return notLoggedIn();
     }
 
-    let headers = {"Authorization": `Bearer " + ${token}`, }; // Add JWT to header.
+    let headers = {"Authorization": `Bearer ${token}`, }; // Add JWT to header.
     
     if ((method == "POST" || method == "PUT") && data.length > 0){
         headers["Content-Type"] = "application/json";
-    }
-
-    const urlObj = new URL(url);
-    if (params) {
-        Object.keys(params).forEach(key => urlObj.searchParams.append(key, params[key]));
     }
 
     let reqObj = { method: method, headers: headers };
@@ -31,7 +34,7 @@ async function authenticatedRequest(url, method, data, params) {
         reqObj.body = data;
     }
 
-    return fetch(urlObj.toString(), reqObj).then(response => {
+    return fetch(`${url}?${params}`, reqObj).then(response => {
         if (response.status == 200) {
             return response.json();
         } else if (response.status == 401) {
