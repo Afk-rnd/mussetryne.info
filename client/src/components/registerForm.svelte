@@ -1,6 +1,6 @@
 <script>
 
-    import { login } from "../lib/login.js";"";
+    import { login, login_set } from "../lib/login.js";"";
     import { register, checkPasswordStrength, checkEmailValid, checkPasswordMatch } from "../lib/register.js";
 
     // Define urls:
@@ -34,7 +34,8 @@
         if (isEmailValid && isPasswordStrong && passwordMatch) {
             let registered = await register(register_url, email, password);
             if (registered){
-                const logged_in = await login(login_url, email, password);
+                const login_details = await login(login_url, email, password);
+                const logged_in = await login_set(login_details);
                 if(logged_in){
                     window.location.href = "/registered";
                 }

@@ -21,3 +21,4 @@ class Token(BaseModel):
     """ Pydantic model for JWT access-tokens used for user authentication. """
     access_token: str
     token_type: str
+    user_email: str

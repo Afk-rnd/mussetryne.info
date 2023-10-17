@@ -1,6 +1,38 @@
 import { writable } from "svelte/store";
+import { LOGGED_IN_BOOLEAN_STORE_KEY, LOGGED_IN_USER_STORE_KEY, MUSSE_TOKEN_STORE_KEY } from "./constants.js";
 
 export const mussetoken = writable("");
+export const currently_logged_in = writable(false);
+export const currently_logged_in_user = writable("");
+
+export const login_set = async (loginDetails) => {
+    console.log("currently logged in: " + loginDetails.currently_logged_in)
+    console.log("user: " + loginDetails.currently_logged_in_user)
+    console.log("token: " + loginDetails.token)
+    console.log("loginObject: " + loginDetails)
+    currently_logged_in.set(loginDetails.currently_logged_in);
+    currently_logged_in_user.set(loginDetails.currently_logged_in_user);
+    mussetoken.set(loginDetails.token);
+
+    if (typeof window !== "undefined") {
+        localStorage.setItem(LOGGED_IN_BOOLEAN_STORE_KEY, loginDetails.currently_logged_in)
+        localStorage.setItem(LOGGED_IN_USER_STORE_KEY, loginDetails.currently_logged_in_user)
+        localStorage.setItem(MUSSE_TOKEN_STORE_KEY, loginDetails.token)
+    }
+
+    return loginDetails.currently_logged_in;
+  };
+  
+  export const login_reset = () => {
+    currently_logged_in.set(false);
+    currently_logged_in_user.set("");
+    mussetoken.set("");
+    if (typeof window !== "undefined") {
+        localStorage.setItem(LOGGED_IN_BOOLEAN_STORE_KEY, "false")
+        localStorage.setItem(LOGGED_IN_USER_STORE_KEY, "")
+        localStorage.setItem(MUSSE_TOKEN_STORE_KEY, "")
+    }
+  };
 
 /**
  * Handler for when login-request returns no errors.
@@ -11,15 +43,16 @@ async function loginNoError(response){
         const json = await response.json();
         const token = json.access_token;
         const token_type = json.token_type;
+        const user_email = json.user_email;
+        console.log(json);
         
         if(token && token !== "" && token_type === "bearer"){  // TODO: This is not a great check.
-            const logged_in = storeToken(token);
-            return logged_in;
+            return {token: token, currently_logged_in: true, currently_logged_in_user: user_email};
         }
 
     } else if (response.status == 401) {
         alert("Feil brukernavn eller passord.");
-        return false;
+        return {token: "", currently_logged_in: false, currently_logged_in_user: ""};
     }
 }
 
@@ -44,8 +77,8 @@ export async function login(url, email, password){
             credentials: "include"
         });
 
-        const loginSucces = await loginNoError(response);
-        return loginSucces;
+        const loginDetails = await loginNoError(response);
+        return loginDetails
 
     }
     catch(error){
@@ -67,10 +100,6 @@ export function storeToken(token) {
         return true;
     }
     return false;
-}
-
-export function deleteToken() {
-    mussetoken.set("");
 }
 
 export function isLoggedIn() {

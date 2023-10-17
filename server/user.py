@@ -15,7 +15,7 @@ class UserDB(Base):
     is_admin = Column(Integer, default=0)
     email = Column(String, unique=True, index=True)
     
-    profile_picture_path = Column(String, default="mussepictures/default_profile_picture.png")
+    profile_picture_path = Column(String, default="mussepictures/default_profile_picture.jpeg")
 
     status = Column(String, default="waiting_for_approval")
     buckets: Mapped[List["BucketDB"]] = relationship("BucketDB", secondary=bucket_user_associations, back_populates="users")

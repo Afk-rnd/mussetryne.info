@@ -151,7 +151,7 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)):
     if user:
         if verify_password(user_login.password, user.hashed_password, user.salt):
             access_token = create_access_token(data={"sub": user.email})
-            return {"access_token": access_token, "token_type": "bearer"}
+            return {"access_token": access_token, "token_type": "bearer", "user_email": user.email}
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

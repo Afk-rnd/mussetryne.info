@@ -1,5 +1,5 @@
 <script>
-    import { login, mussetoken } from "../lib/login.js";
+    import { login, mussetoken, login_set } from "../lib/login.js";
     import { checkEmailValid } from "../lib/register.js";
 
 
@@ -28,18 +28,21 @@
     async function handleSubmit(event) {
         event.preventDefault();
         if (isEmailValid) {
-            const logged_in = await login(url, email, password);
-            if(logged_in){
-                window.location.href = "http://localhost:5173/";
+            try{
+                const login_details = await login(url, email, password);
+                const logged_in = await login_set(login_details);
+                if(logged_in){
+                    window.location.href = "/";
+                }
+            }   
+            catch (e){
+                console.log(e);
             }
         }
     }
 
     mussetoken.subscribe(token => {
-        // Only set token in local storage if in browser:
-        if (typeof(window) !== "undefined" && window !== null){
-            localStorage.setItem("mussetoken", token)
-        }
+
     });
 
 </script>
