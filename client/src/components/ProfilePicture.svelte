@@ -12,11 +12,15 @@
     let logged_in = false;
 
     async function get_profile_picture(){
-        console.log("Getting profile picture");
-        profile_picture = await authenticatedGetRequest(
-            "http://localhost:42069/profile_picture",
-            `user_email=${user_email}`
-        );
+        try{
+            const blob = await authenticatedGetRequest(
+                "http://localhost:42069/profile_picture",
+                `user_email=${user_email}`
+            );
+            profile_picture = URL.createObjectURL(blob);
+        } catch(error){
+            console.log(error);
+        }
     }
     
 
@@ -29,7 +33,7 @@
         }
         if (logged_in) {
             get_profile_picture().then(() => {
-                console.log("Got profile picture");
+                
             })
         };
     });
@@ -38,11 +42,14 @@
         const l = localStorage.getItem("currently_logged_in");
         if (l && typeof l === "boolean") {
             logged_in = l;
-            if (logged_in) {
-                get_profile_picture().then(() => {
-                    console.log("Got profile picture");
-                })
-            }
+        }
+        else if (l && typeof l === "string") {
+            logged_in = l === "true";
+        }
+        if (logged_in) {
+            get_profile_picture().then((img) => {
+
+            })
         }
     }
 
@@ -53,6 +60,6 @@
         <Avatar id={id} src="{profile_picture}"/>
     </div>
     <div slot="not_logged_in">
-        <Avatar id={id} src="https://img.freepik.com/free-vector/anonymous-avatars-grey-circles_78370-2086.jpg?w=740&t=st=1697408450~exp=1697409050~hmac=cf71a368cb3f3e1e4b3ef4772b9022aed60414318e5da47f61006ad8320e91fd"/>
+        <Avatar id={id} />
     </div>
 </LoggedInSlot>

@@ -36,7 +36,16 @@ async function authenticatedRequest(url, method, data, params) {
 
     return fetch(`${url}?${params}`, reqObj).then(response => {
         if (response.status == 200) {
-            return response.json();
+            if (response.headers.get("Content-Type") == "application/json") {
+                return response.json();
+            }
+            else if (response.headers.get("Content-Type") == "text/plain") {
+                return response.text();
+            }
+            else if (response.headers.get("Content-Type") == "image/jpeg" || response.headers.get("Content-Type") == "image/png") {
+                return response.blob();
+            }
+            return response;
         } else if (response.status == 401) {
             return notLoggedIn();
         }
