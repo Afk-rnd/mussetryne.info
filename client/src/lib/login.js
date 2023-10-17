@@ -83,6 +83,7 @@ export async function login(url, email, password){
     }
     catch(error){
         alert("En feil oppstod. Vennligst prøv igjen.");
+        console.log(error);
         return false;
     }
 
