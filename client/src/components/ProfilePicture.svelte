@@ -2,6 +2,7 @@
     import { Avatar } from "flowbite-svelte";
     import {currently_logged_in} from "../lib/login.js";
     import { authenticatedGetRequest } from "../lib/authenticated.js";
+    import { LOGGED_IN_BOOLEAN_STORE_KEY } from "../lib/constants.js";
     import LoggedInSlot from "./LoggedInSlot.svelte";
 
     export let user_email = "";
@@ -37,7 +38,7 @@
     });
 
     if (typeof window !== "undefined") {
-        const l = localStorage.getItem("currently_logged_in");
+        const l = localStorage.getItem(LOGGED_IN_BOOLEAN_STORE_KEY);
         if (l && typeof l === "boolean") {
             logged_in = l;
         }

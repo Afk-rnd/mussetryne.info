@@ -8,10 +8,10 @@
     Button,
   } from "flowbite-svelte";
 
-
-  const handle_click = () => {
+  const handle_register_redirect = () => {
     location.href = "/register";
   };
+
 </script>
 
 <Navbar>
@@ -28,7 +28,7 @@
     >
   </NavBrand>
   <div class="flex md:order-2">
-    <Button size="sm" on:click={handle_click}>Bli medlem!</Button>
+    <Button size="sm" on:click={handle_register_redirect}>Bli medlem!</Button>
     <NavHamburger />
   </div>
   <NavUl class="order-1 justify-end">

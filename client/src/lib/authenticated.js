@@ -1,4 +1,5 @@
 import { mussetoken } from "../lib/login.js";
+import { MUSSE_TOKEN_STORE_KEY } from "./constants.js";
 
 let token = "";
 
@@ -7,7 +8,7 @@ mussetoken.subscribe((mussetoken) => {
 });
 
 if (token === "" && typeof window !== "undefined") {
-    const t = localStorage.getItem("mussetoken");
+    const t = localStorage.getItem(MUSSE_TOKEN_STORE_KEY);
     if(t){
         token = t;
     }
