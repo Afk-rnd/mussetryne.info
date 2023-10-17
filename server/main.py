@@ -179,13 +179,13 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     return {"message": "User registered successfully"}
 
 @app.post("/upload_mussepicture")
-async def upload_mussepicture(file: UploadFile = File(...), authenticated_session: AuthenticatedSession = Depends(get_unapproved_session)):
+async def upload_mussepicture(mussepicture: UploadFile = File(...), authenticated_session: AuthenticatedSession = Depends(get_unapproved_session)):
     """ Route to upload profile picture (Mussepicture). Does not require user to be approved. """
     if not os.path.exists(PROFILE_PICTURES_DIRECTORY):
         os.mkdir(PROFILE_PICTURES_DIRECTORY)
 
     file_path = os.path.join("mussepictures", authenticated_session.user.email + ".jpeg")
-    await process_mussepicture(file, save_path=file_path)
+    await process_mussepicture(mussepicture, save_path=file_path)
 
     authenticated_session.user.profile_picture_path = file_path
     authenticated_session.db.commit()

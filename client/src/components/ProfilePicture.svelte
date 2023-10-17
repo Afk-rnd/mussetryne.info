@@ -16,7 +16,9 @@
                 "http://localhost:42069/profile_picture",
                 `user_email=${user_email}`
             );
-            profile_picture = URL.createObjectURL(blob);
+            if(blob){
+                profile_picture = URL.createObjectURL(blob);
+            }
         } catch(error){
             console.log(error);
         }
