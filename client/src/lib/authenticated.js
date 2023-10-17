@@ -19,23 +19,30 @@ function notLoggedIn() {
     return {};
 }
 
-async function authenticatedRequest(url, method, data, params) {
+async function authenticatedRequest(url, method, data, params, data_type) {
     if (!token) {
         return notLoggedIn();
     }
 
     let headers = {"Authorization": `Bearer ${token}`, }; // Add JWT to header.
     
-    if ((method == "POST" || method == "PUT") && data.length > 0){
-        headers["Content-Type"] = "application/json";
+    if (data_type != "none" && (method == "POST" || method == "PUT") && data.length > 0){
+        if(data_type == "json"){
+            headers["Content-Type"] = "application/json";
+        }
+        else if(data_type == "form"){
+            headers["Content-Type"] = "multipart/form-data";
+        }
     }
 
     let reqObj = { method: method, headers: headers };
-    if (data.length > 0) {
+    if (data) { // TODO: Find a better data-check?
         reqObj.body = data;
     }
 
-    return fetch(`${url}?${params}`, reqObj).then(response => {
+    const urlWParams = params.length > 0 ? `${url}?${params}` : url;
+
+    return fetch(urlWParams, reqObj).then(response => {
         if (response.status == 200) {
             if (response.headers.get("Content-Type") == "application/json") {
                 return response.json();
@@ -55,14 +62,14 @@ async function authenticatedRequest(url, method, data, params) {
     });
 }
 
-export async function authenticatedGetRequest(url, params) {
-    return authenticatedRequest(url, "GET", "", params);
+export async function authenticatedGetRequest(url, params="") {
+    return authenticatedRequest(url, "GET", "", params, "none");
 }
 
-export async function authenticatedPostRequest(url, data, params) {
-    return authenticatedRequest(url, "POST", data, params);
+export async function authenticatedPostRequest(url, data, params="", data_type="json") {
+    return authenticatedRequest(url, "POST", data, params, data_type=data_type);
 }
 
-export async function authenticatedPutRequest(url, data, params) {
-    return authenticatedRequest(url, "PUT", data, params);
+export async function authenticatedPutRequest(url, data, params="", data_type="json") {
+    return authenticatedRequest(url, "PUT", data, params, data_type=data_type);
 }
