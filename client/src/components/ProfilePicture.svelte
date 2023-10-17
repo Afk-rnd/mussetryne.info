@@ -33,9 +33,7 @@
             logged_in = t === "true";
         }
         if (logged_in) {
-            get_profile_picture().then(() => {
-                
-            })
+            get_profile_picture()
         };
     });
 
@@ -48,9 +46,7 @@
             logged_in = l === "true";
         }
         if (logged_in) {
-            get_profile_picture().then((img) => {
-
-            })
+            get_profile_picture()
         }
     }
 
