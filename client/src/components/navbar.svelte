@@ -17,8 +17,12 @@
   import NavBarNotLoggedIn from "./NavbarNotLoggedIn.svelte";
   import { currently_logged_in_user } from "../lib/login.js";
 
-  const handle_click = () => {
+  const handle_straffefisk_redirect = () => {
     location.href = "/straffefisk";
+  };
+
+  const handle_settings_redirect = () => {
+    location.href = "/settings";
   };
 
   const handle_logout = () => {
@@ -31,6 +35,22 @@
 
     location.reload();
   };
+  
+  let user_email = "";
+
+  currently_logged_in_user.subscribe((t) => {
+    if (typeof t === "string") {
+      user_email = t;
+    }
+  });
+  
+
+  if (typeof window !== "undefined") {
+    const l = localStorage.getItem("currently_logged_in_user");
+    if (l && typeof l === "string") {
+      user_email = l;
+    }
+  }
 
 </script>
 
@@ -50,18 +70,20 @@
           >
       </NavBrand>
       <div class="flex items-center md:order-2">
-          <ProfilePicture user_email={$currently_logged_in_user} id="avatar-menu" />
+          <div id="avatar-menu">
+            <ProfilePicture user_email={$currently_logged_in_user} />
+          </div>
           <NavHamburger class1="w-full md:flex md:w-auto md:order-1" />
       </div>
       <Dropdown placement="bottom" triggeredBy="#avatar-menu">
           <DropdownHeader>
-          <span class="block text-sm">AFK NORMANN</span>
-          <span class="block truncate text-sm font-medium">afk@mussetryne.info</span
+          <span class="block text-sm">{user_email}</span>
+          <span class="block truncate text-sm font-medium">{user_email}</span
           >
           </DropdownHeader>
           <DropdownItem>Dashboard</DropdownItem>
-          <DropdownItem>Settings</DropdownItem>
-          <DropdownItem on:click={handle_click}>Straffefisk</DropdownItem>
+          <DropdownItem on:click={handle_settings_redirect}>Innstillinger</DropdownItem>
+          <DropdownItem on:click={handle_straffefisk_redirect}>Straffefisk</DropdownItem>
           <DropdownDivider />
           <DropdownItem on:click={handle_logout}>Sign out</DropdownItem>
       </Dropdown>

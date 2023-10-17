@@ -2,10 +2,8 @@
     import { Avatar } from "flowbite-svelte";
     import {currently_logged_in} from "../lib/login.js";
     import { authenticatedGetRequest } from "../lib/authenticated.js";
-    import { VolumeDownOutline } from "flowbite-svelte-icons";
     import LoggedInSlot from "./LoggedInSlot.svelte";
 
-    export let id = "";
     export let user_email = "";
 
     let profile_picture = null;
@@ -56,10 +54,6 @@
 </script>
 
 <LoggedInSlot>
-    <div slot="logged_in">
-        <Avatar id={id} src="{profile_picture}"/>
-    </div>
-    <div slot="not_logged_in">
-        <Avatar id={id} />
-    </div>
+    <Avatar slot="logged_in" src={profile_picture} />
+    <Avatar slot="not_logged_in" rounded/>
 </LoggedInSlot>
