@@ -1,10 +1,11 @@
 .env
 __pycache__/
 test.db
-mussepictures/
 node_modules/
 .svelte-kit/*
 !.svelte-kit/tsconfig.json
 
 *.Identifier
 .venv/
+server/mussepictures/
+.venv

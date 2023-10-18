@@ -6,10 +6,10 @@ export const currently_logged_in = writable(false);
 export const currently_logged_in_user = writable("");
 
 export const login_set = async (loginDetails) => {
-    console.log("currently logged in: " + loginDetails.currently_logged_in)
-    console.log("user: " + loginDetails.currently_logged_in_user)
-    console.log("token: " + loginDetails.token)
-    console.log("loginObject: " + loginDetails)
+    // console.log("currently logged in: " + loginDetails.currently_logged_in)
+    // console.log("user: " + loginDetails.currently_logged_in_user)
+    // console.log("token: " + loginDetails.token)
+    // console.log("loginObject: " + loginDetails)
     currently_logged_in.set(loginDetails.currently_logged_in);
     currently_logged_in_user.set(loginDetails.currently_logged_in_user);
     mussetoken.set(loginDetails.token);
@@ -44,7 +44,6 @@ async function loginNoError(response){
         const token = json.access_token;
         const token_type = json.token_type;
         const user_email = json.user_email;
-        console.log(json);
         
         if(token && token !== "" && token_type === "bearer"){  // TODO: This is not a great check.
             return {token: token, currently_logged_in: true, currently_logged_in_user: user_email};

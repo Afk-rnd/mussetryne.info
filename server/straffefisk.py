@@ -10,6 +10,8 @@ class StraffefiskDB(Base):
 
     id = Column(Integer, primary_key=True)
     number = Column(Integer)
+    bucket_id = Column(Integer, ForeignKey('buckets.id'))
+    bucket = relationship('BucketDB')
     given_to_id = Column(Integer, ForeignKey('users.id'))
     given_to = relationship('UserDB', foreign_keys=[given_to_id])
     given_by_id = Column(Integer, ForeignKey('users.id'))
@@ -21,6 +23,7 @@ class StraffefiskDB(Base):
 class Straffefisk(BaseModel):
     id: int
     number: int
+    bucket_id: int
     given_to_id: int
     given_by_id: int
     description: str
