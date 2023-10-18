@@ -3,7 +3,8 @@ __pycache__/
 test.db
 mussepictures/
 node_modules/
-.svelte-kit/
+.svelte-kit/*
+!.svelte-kit/tsconfig.json
 
 *.Identifier
 .venv/

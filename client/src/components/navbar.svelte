@@ -85,7 +85,7 @@
         <DropdownItem on:click={handle_settings_redirect}>Innstillinger</DropdownItem>
         <DropdownItem on:click={handle_straffefisk_redirect}>Straffefisk</DropdownItem>
         <DropdownDivider />
-        <DropdownItem on:click={handle_logout}>Sign out</DropdownItem>
+        <DropdownItem on:click={handle_logout}>Logg ut</DropdownItem>
     </Dropdown>
     <NavUl>
         <NavLi href="/" active={true}>Hjem</NavLi>

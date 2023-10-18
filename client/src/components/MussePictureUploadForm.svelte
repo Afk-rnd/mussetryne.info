@@ -11,9 +11,7 @@
         event.preventDefault();
         const form = event.target;
         const data = new FormData(form);
-        console.log({data});
         const json = await authenticatedPostRequest("http://localhost:42069/upload_mussepicture", data, "", "form");
-        console.log(json);
     }
 
 </script>
