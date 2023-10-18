@@ -5,9 +5,9 @@
     import { LOGGED_IN_BOOLEAN_STORE_KEY } from "../lib/constants.js";
     import LoggedInSlot from "./LoggedInSlot.svelte";
 
+    export let show_picture = true;
     export let user_email = "";
-
-    let profile_picture = null;
+    export let profile_picture = null;
     let logged_in = false;
 
     async function get_profile_picture(){
@@ -52,7 +52,9 @@
 
 </script>
 
+{#if show_picture}
 <LoggedInSlot>
     <Avatar slot="logged_in" src={profile_picture} />
     <Avatar slot="not_logged_in" rounded/>
 </LoggedInSlot>
+{/if}
