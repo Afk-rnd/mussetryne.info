@@ -317,6 +317,11 @@ def current_user(authenticated_session: AuthenticatedSession = Depends(get_authe
     """ Route that requires authentication. """
     return {"user": "%s" % authenticated_session.user.email}
 
+@app.get("/users/me/approved")
+def current_user_approved(authenticated_session: AuthenticatedSession = Depends(get_unapproved_session)):
+    """ Route that requires authentication. """
+    return {"approved": "%d" % authenticated_session.user.approved}
+
 @app.put("/users/approve")
 async def approve_user(user_email: str, authenticated_session: AuthenticatedSession = Depends(get_authenticated_session)):
     """ Route to approve user. """

@@ -40,7 +40,6 @@
 
     if(typeof window !== "undefined") {
         const l = localStorage.getItem("logged_in_user");
-        console.log(l);
         if(l && typeof l === "string") {
             user_email = l;
         }

@@ -73,3 +73,7 @@ export async function authenticatedPostRequest(url, data, params="", data_type="
 export async function authenticatedPutRequest(url, data, params="", data_type="json") {
     return authenticatedRequest(url, "PUT", data, params, data_type=data_type);
 }
+
+export function getUser() {
+    return authenticatedGetRequest("http://localhost:42069/users/me");
+}

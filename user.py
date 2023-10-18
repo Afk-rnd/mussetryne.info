@@ -10,6 +10,9 @@ class UserDB(Base):
     __tablename__ = "users"  # Replace with your actual table name
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+
+    is_admin: Mapped[bool] = mapped_column(Integer, default=0)
+    approved: Mapped[bool] = mapped_column(Integer, default=0)
     
     email = Column(String, unique=True, index=True)
     
