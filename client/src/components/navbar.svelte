@@ -29,14 +29,14 @@
   const handle_logout = () => {
     logOut();
 
-    if (window.location.href !== "http://localhost:5173/"){
-        window.location.href = "/";
-        return;
+    if (window.location.href !== "http://localhost:5173/") {
+      window.location.href = "/";
+      return;
     }
 
     location.reload();
   };
-  
+
   let user_email = "";
 
   currently_logged_in_user.subscribe((t) => {
@@ -44,7 +44,6 @@
       user_email = t;
     }
   });
-  
 
   if (typeof window !== "undefined") {
     const l = localStorage.getItem(LOGGED_IN_USER_STORE_KEY);
@@ -52,46 +51,48 @@
       user_email = l;
     }
   }
-
 </script>
 
 <LoggedInSlot>
   <Navbar slot="logged_in">
     <NavBrand href="/">
-        <img
-        src="https://mussetryne.info/resources/logo.png"
+      <img
+        src="images/logo.png"
         class="mr-3 h-16 sm:h-22"
         alt="Flowbite Logo"
-        />
-        <span
+      />
+      <span
         class="self-center font-semibold dark:text-white"
         style="font-size: 10px;"
         >Opplysningssenteret for<br />Medisinsk <br /> Mussetryne</span
-        >
+      >
     </NavBrand>
     <div class="flex items-center md:order-2">
-        <div id="avatar-menu">
-          <ProfilePicture user_email={$currently_logged_in_user} />
-        </div>
-        <NavHamburger class1="w-full md:flex md:w-auto md:order-1" />
+      <div id="avatar-menu">
+        <ProfilePicture user_email={$currently_logged_in_user} />
+      </div>
+      <NavHamburger class1="w-full md:flex md:w-auto md:order-1" />
     </div>
     <Dropdown placement="bottom" triggeredBy="#avatar-menu">
-        <DropdownHeader>
+      <DropdownHeader>
         <span class="block text-sm">{user_email}</span>
-        <span class="block truncate text-sm font-medium">{user_email}</span
-        >
-        </DropdownHeader>
-        <DropdownItem>Dashboard</DropdownItem>
-        <DropdownItem on:click={handle_settings_redirect}>Innstillinger</DropdownItem>
-        <DropdownItem on:click={handle_straffefisk_redirect}>Straffefisk</DropdownItem>
-        <DropdownDivider />
-        <DropdownItem on:click={handle_logout}>Logg ut</DropdownItem>
+        <span class="block truncate text-sm font-medium">{user_email}</span>
+      </DropdownHeader>
+      <DropdownItem>Dashboard</DropdownItem>
+      <DropdownItem on:click={handle_settings_redirect}
+        >Innstillinger</DropdownItem
+      >
+      <DropdownItem on:click={handle_straffefisk_redirect}
+        >Straffefisk</DropdownItem
+      >
+      <DropdownDivider />
+      <DropdownItem on:click={handle_logout}>Logg ut</DropdownItem>
     </Dropdown>
     <NavUl>
-        <NavLi href="/" active={true}>Hjem</NavLi>
-        <NavLi href="/about">Om oss</NavLi>
-        <NavLi href="/contact">Kontakt</NavLi>
+      <NavLi href="/" active={true}>Hjem</NavLi>
+      <NavLi href="/about">Om oss</NavLi>
+      <NavLi href="/contact">Kontakt</NavLi>
     </NavUl>
   </Navbar>
-  <NavBarNotLoggedIn slot="not_logged_in"/>
+  <NavBarNotLoggedIn slot="not_logged_in" />
 </LoggedInSlot>

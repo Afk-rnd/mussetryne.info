@@ -11,16 +11,11 @@
   const handle_register_redirect = () => {
     location.href = "/register";
   };
-
 </script>
 
 <Navbar>
   <NavBrand href="/">
-    <img
-      src="https://mussetryne.info/resources/logo.png"
-      class="mr-3 h-16 sm:h-22"
-      alt="Flowbite Logo"
-    />
+    <img src="images/logo.png" class="mr-3 h-16 sm:h-22" alt="Flowbite Logo" />
     <span
       class="self-center font-semibold dark:text-white"
       style="font-size: 10px;"
